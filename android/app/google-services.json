@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "184516053662",
+    "project_id": "hey-joy-application",
+    "storage_bucket": "hey-joy-application.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184516053662:android:3faed9f84ddfe9b038098f",
+        "android_client_info": {
+          "package_name": "com.example.hey_joy_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOSbc8-awtfto9FnLLxKx5Rk3TpXhHp5c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
