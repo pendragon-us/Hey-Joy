@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:hey_joy_application/data/mood_pref.dart';
 import 'package:hey_joy_application/data/push_notification.dart';
 import 'package:hey_joy_application/notification/notification.dart';
+import 'package:hey_joy_application/pages/auth_page.dart';
 import 'package:hey_joy_application/pages/calender_page.dart';
 import 'package:hey_joy_application/pages/chatbot.dart';
 import 'package:hey_joy_application/pages/dashboard.dart';
@@ -98,7 +99,7 @@ class HeyJoyApp extends StatelessWidget {
         '/journalOrCalender': (context) =>  JournalOrCalender(),
       },
       debugShowCheckedModeBanner: false,
-      home:  Dashboard(),
+      home:  AuthPage(),
     );
   }
 }
