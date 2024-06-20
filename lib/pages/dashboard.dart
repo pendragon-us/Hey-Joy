@@ -1,12 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../notification/notification.dart';
 import '../utils/dashboard_container.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   Dashboard({super.key});
 
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
   final user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime scheduleTime = DateTime.now().add(Duration(seconds: 10));
+    NotificationService.showScheduleNotification("Hey Cheif 😎", 'Its time to check your mood...', scheduleTime);
+    listenToNotification();
+  }
+
+  listenToNotification() {
+    NotificationService.onClickNotification.stream.listen((event) {
+      Navigator.pushNamed(context, '/emojiTracker');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

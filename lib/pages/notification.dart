@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hey_joy_application/pages/all_notifications.dart';
 import 'package:hey_joy_application/pages/read_notifications.dart';
 import 'package:hey_joy_application/pages/unread_notifications.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
+
+import 'all_notifications.dart';
 
 class NotificationPage extends StatefulWidget {
   NotificationPage({super.key});
@@ -54,21 +57,41 @@ class _NotificationPageState extends State<NotificationPage> {
               children: [
                 Text('Notifications',
                   style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold
                   ),
                 ),
                 Icon(Icons.more_vert_outlined)
-
               ],
             ),
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 width: MediaQuery.of(context).size.width,
+                child: ValueListenableBuilder(
+                  valueListenable: Hive.box('notifications').listenable(),
+                  builder: (context, Box box, widget) {
+                    if (box.values.isEmpty) {
+                      return Center(
+                        child: Text('No notifications'),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: box.values.length,
+                      itemBuilder: (context, index) {
+                        var notification = box.getAt(index);
+                        return ListTile(
+                          title: Text(notification['quote']),
+                          subtitle: Text(notification['mood']),
+                          trailing: Text(DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.parse(notification['time']))),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
-
           ],
         ),
       ),

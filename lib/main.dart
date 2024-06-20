@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hey_joy_application/data/mood_pref.dart';
 import 'package:hey_joy_application/data/push_notification.dart';
-import 'package:hey_joy_application/pages/auth_page.dart';
+import 'package:hey_joy_application/notification/notification.dart';
 import 'package:hey_joy_application/pages/calender_page.dart';
 import 'package:hey_joy_application/pages/chatbot.dart';
 import 'package:hey_joy_application/pages/dashboard.dart';
@@ -20,6 +20,7 @@ import 'data/game_pref.dart';
 import 'data/user_pref.dart';
 import 'firebase_options.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -36,6 +37,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //local notifications service
+  await NotificationService.init();
+  tz.initializeTimeZones();
 
   //Firebase
   await Firebase.initializeApp(
@@ -57,6 +62,7 @@ Future<void> main() async {
   //Hive
   await Hive.initFlutter();
   var box = await Hive.openBox('mybox');
+  await Hive.openBox('notifications');
 
   //Shared Preferences
   await UserPref.init();
@@ -92,7 +98,7 @@ class HeyJoyApp extends StatelessWidget {
         '/journalOrCalender': (context) =>  JournalOrCalender(),
       },
       debugShowCheckedModeBanner: false,
-      home:  AuthPage(),
+      home:  Dashboard(),
     );
   }
 }

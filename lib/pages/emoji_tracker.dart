@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import '../notification/notification.dart';
 
 class MoodSelectorPage extends StatefulWidget {
   const MoodSelectorPage({super.key});
@@ -18,19 +17,102 @@ class MoodSelectorPage extends StatefulWidget {
 class _MoodSelectorPageState extends State<MoodSelectorPage> {
   int selectedIndex = 2; // Default value
   String formattedDate = DateFormat('EEE, d MMM').format(DateTime.now());
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
-  List<String> quotes = [];
 
   @override
   void initState() {
     super.initState();
     _loadSelectedIndex();
-    _initializeNotification();
     tz.initializeTimeZones();
+  }
+
+  // Send notification to user
+  void sendNotificationBasedOnMood() async {
+    // Map the selected index to mood names
+    final moodMap = {
+      0: 'angry',
+      1: 'sad',
+      2: 'neutral',
+      3: 'happy',
+      4: 'loving',
+      5: 'depressed',
+      6: 'anxious',
+      7: 'stressed',
+    };
+
+    // Get the mood based on the selected index
+    String mood = moodMap[selectedIndex] ?? 'neutral';
+
+    // Fetch quotes from Firestore based on the mood
+    List<String> quotes = await fetchQuotesFromFirestore(mood);
+    print('Fetched quotes: $quotes');
+
+    if (quotes.isNotEmpty) {
+      // Load recently used indices
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<int> usedIndices = prefs.getStringList('usedIndices_$mood')?.map((e) => int.parse(e)).toList() ?? [];
+
+      // Get a list of unused indices
+      List<int> availableIndices = List.generate(quotes.length, (index) => index)
+          .where((index) => !usedIndices.contains(index))
+          .toList();
+
+      // If all quotes have been used, reset the usedIndices list
+      if (availableIndices.isEmpty) {
+        usedIndices.clear();
+        availableIndices = List.generate(quotes.length, (index) => index);
+      }
+
+      // Randomly select an available index
+      int randomIndex = availableIndices[Random().nextInt(availableIndices.length)];
+      String randomQuote = quotes[randomIndex];
+      print('Selected quote: $randomQuote');
+
+      // Update the used indices list
+      usedIndices.add(randomIndex);
+      await prefs.setStringList('usedIndices_$mood', usedIndices.map((e) => e.toString()).toList());
+
+      // Schedule the notification
+      DateTime scheduleTime = DateTime.now().add(Duration(seconds: 10));
+      NotificationService.showScheduleNotificationForQuotes(mood, randomQuote, scheduleTime);
+      print('Scheduled notification for $scheduleTime');
+
+      // Save notification to Hive
+      var box = Hive.box('notifications');
+      await box.add({'mood': mood, 'quote': randomQuote, 'time': scheduleTime.toIso8601String()});
+
+      print('Notification saved to Hive');
+
+    } else {
+      print('No quotes available for mood: $mood');
+    }
+  }
+
+  Future<List<String>> fetchQuotesFromFirestore(String mood) async {
+    List<String> quotes = [];
+    try {
+      // Reference the document for the specified mood
+      DocumentReference<Map<String, dynamic>> docRef =
+      FirebaseFirestore.instance.collection('quotes').doc(mood);
+
+      // Fetch the document snapshot
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await docRef.get();
+
+      // Check if the document exists
+      if (documentSnapshot.exists) {
+        var data = documentSnapshot.data();
+
+        // Extract quotes
+        quotes = List<String>.from(data?['quotes'] ?? []);
+
+        // Log fetched quotes
+        print('Quotes for mood $mood: $quotes');
+      } else {
+        print('Document with mood "$mood" does not exist.');
+      }
+    } catch (e) {
+      print("Error fetching quotes: $e");
+    }
+    return quotes;
   }
 
   // Load the selected emoji index from shared preferences
@@ -45,84 +127,6 @@ class _MoodSelectorPageState extends State<MoodSelectorPage> {
   _saveSelectedIndex(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('selectedIndex', index);
-    prefs.setStringList('quotes', quotes);
-  }
-
-  // Fetch quotes from Firestore based on mood
-  Future<void> fetchQuotes(String mood) async {
-    try {
-      var snapshot = await _firestore.collection('Quotes').doc(mood.toLowerCase()).get();
-      var data = snapshot.data();
-      if (data != null) {
-        setState(() {
-          quotes = List.from(data['quotes']);
-        });
-        // Save quotes to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setStringList('quotes', quotes);
-        print('Quotes: $quotes');
-      } else {
-        setState(() {
-          quotes = []; // Clear quotes if data is null
-        });
-      }
-    } catch (e) {
-      print('Error fetching quotes: $e');
-      setState(() {
-        quotes = []; // Clear quotes on error
-      });
-    }
-  }
-
-  // Initialize notification settings
-  Future<void> _initializeNotification() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    final DarwinInitializationSettings initializationSettingsIOS =
-    DarwinInitializationSettings();
-
-    final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  // Schedule hourly notifications
-  Future<void> scheduleNotification() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> quotes = prefs.getStringList('quotes') ?? [];
-
-    if (quotes.isEmpty) return;
-
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your_channel_id', 'your_channel_name',
-        importance: Importance.max,
-        priority: Priority.high,
-        showWhen: false);
-    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
-
-    // Cancel all existing notifications
-    await flutterLocalNotificationsPlugin.cancelAll();
-
-    for (int i = 1; i <= 24; i++) { // Schedule for the next 24 hours
-      await flutterLocalNotificationsPlugin.zonedSchedule(
-          i,
-          'Motivational Quote',
-          quotes[Random().nextInt(quotes.length)], // Select a random quote
-          tz.TZDateTime.now(tz.local).add(Duration(minutes: i)),
-          platformChannelSpecifics,
-          androidAllowWhileIdle: true,
-          uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-          matchDateTimeComponents: DateTimeComponents.time);
-    }
   }
 
   @override
@@ -209,11 +213,9 @@ class _MoodSelectorPageState extends State<MoodSelectorPage> {
                               selectedIndex = -1; // Deselect if the same emoji is tapped
                             } else {
                               selectedIndex = index;
-                              String selectedMood = emotionNames[index];
-                              fetchQuotes(selectedMood); // Fetch quotes for selected mood
                             }
                             _saveSelectedIndex(selectedIndex); // Save the index
-                            scheduleNotification(); // Schedule notifications
+                            sendNotificationBasedOnMood(); // Send notification on emoji tap
                           });
                         },
                         child: Column(
