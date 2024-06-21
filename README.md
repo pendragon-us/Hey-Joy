@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# hey_joy_application
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
 <h1>HeyJoy</h1>
 <p>
   HeyJoy is an all-in-one mental wellness and productivity app designed to enhance user well-being through mood tracking, motivational content, note-taking, and engaging games. The app combines several features     to help users manage their moods, stay motivated, and keep track of their daily activities.
