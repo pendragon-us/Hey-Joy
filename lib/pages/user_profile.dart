@@ -61,66 +61,67 @@ class _UserProfilePageState extends State<UserProfilePage> {
           children: [
             //Hello
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  //Hello
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width / 1.4,
-                    decoration: BoxDecoration(
-                      color: Color(0xffD9D9D9),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Hello!',
-                        style: TextStyle(
-                          fontSize: 26,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    //Hello
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      height: 70,
+                      width: MediaQuery.of(context).size.width / 1.4,
+                      decoration: BoxDecoration(
+                        color: Color(0xffD9D9D9),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Hello!',
+                          style: TextStyle(
+                            fontSize: 26,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  //User picture
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Image(
-                        width: 150,
-                        height: 150,
-                        image: AssetImage('images/woman.png'),
-                      ),
-                      IconButton(
-                          onPressed: (){},
-                          icon: Icon(Icons.edit),
-                      )
-                    ],
-                  ),
-                  //User name
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    height: 70,
-                    width: MediaQuery.of(context).size.width / 1.4,
-                    decoration: BoxDecoration(
-                      color: Color(0xffD9D9D9),
-                      borderRadius: BorderRadius.circular(20),
+                    //User picture
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Image(
+                          width: 150,
+                          height: 150,
+                          image: AssetImage('images/woman.png'),
+                        ),
+                        IconButton(
+                            onPressed: (){},
+                            icon: Icon(Icons.edit),
+                        )
+                      ],
                     ),
-                    child: Center(
-                      child: Text(
-                        userName,
-                        style: TextStyle(
-                          fontSize: 26,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
+                    //User name
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      height: 70,
+                      width: MediaQuery.of(context).size.width / 1.4,
+                      decoration: BoxDecoration(
+                        color: Color(0xffD9D9D9),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: Text(
+                          userName,
+                          style: TextStyle(
+                            fontSize: 26,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             //About me
