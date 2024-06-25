@@ -35,7 +35,7 @@ class _JournalOrCalenderState extends State<JournalOrCalender> {
         color: Color(0xff735bf2),
         items: const [
           Icon(Icons.edit_note_outlined, size: 30, color: Colors.white,),
-          Icon(Icons.home, size: 30, color: Colors.white,),
+          Icon(Icons.calendar_month, size: 30, color: Colors.white,),
         ],
         onTap: (index) {
           navigateToPage(index);

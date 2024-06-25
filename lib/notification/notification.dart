@@ -56,7 +56,7 @@ class NotificationService{
         0,
         title,
         body,
-        RepeatInterval.everyMinute,
+        RepeatInterval.daily,
         platformChannelSpecifics,
     );
   }
@@ -72,7 +72,7 @@ class NotificationService{
       1,
       title,
       body,
-      RepeatInterval.everyMinute,
+      RepeatInterval.hourly,
       platformChannelSpecifics,
     );
   }
