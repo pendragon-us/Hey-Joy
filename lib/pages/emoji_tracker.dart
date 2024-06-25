@@ -177,7 +177,7 @@ class _MoodSelectorPageState extends State<MoodSelectorPage> {
                           ),
                           child: IconButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.pushReplacementNamed(context, '/dashboard');
                             },
                             icon: Icon(Icons.close),
                           ),
@@ -245,7 +245,7 @@ class _MoodSelectorPageState extends State<MoodSelectorPage> {
                 GestureDetector(
                   onTap: () {
                     _saveSelectedIndex(selectedIndex); // Save selected index when continue button is pressed
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, '/dashboard');
                   },
                   child: Container(
                     height: 40,
