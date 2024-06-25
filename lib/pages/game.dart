@@ -104,10 +104,6 @@ class _GamePageState extends State<GamePage> {
       final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
       final currentTime = '$minutes:$seconds';
 
-      setState(() {
-        userBestTime = currentTime;
-      });
-
       // Check if the current time is better than the best time
       _compareAndSaveBestTime(currentTime);
     }
