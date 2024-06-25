@@ -32,7 +32,7 @@ class _LogInPageState extends State<LogInPage> {
           email: emailController.text,
           password: passwordController.text
       );
-      Navigator.pushReplacementNamed(context, '/dashboard');
+      Navigator.pushReplacementNamed(context, '/emojiTracker');
     } on FirebaseAuthException catch (e) {
       Navigator.pop(context);
       showError(e.code);

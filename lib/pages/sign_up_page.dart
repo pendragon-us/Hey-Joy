@@ -53,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'password': encryptedPassword.base64,
         });
 
-        Navigator.pushReplacementNamed(context, '/dashboard');
+        Navigator.pushReplacementNamed(context, '/emojiTracker');
       } else {
         Navigator.pop(context);
         showError('User creation failed.');
