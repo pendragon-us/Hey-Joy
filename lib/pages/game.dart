@@ -185,12 +185,35 @@ class _GamePageState extends State<GamePage> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Exit'),
+                                content: Text('Do you want to exit?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Yes'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         icon: Container(
                           padding: const EdgeInsets.all(3),
                           decoration: BoxDecoration(
-                              color: Colors.grey,
+                            color: Colors.grey,
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: Icon(

@@ -20,6 +20,17 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController passwordController = TextEditingController();
 
   void createAccount() async {
+
+    if(_isChecked == false){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Please agree to the Terms of Service and Privacy Policy'),
+        ),
+      );
+      return;
+    }
+
     showDialog(
         context: context,
         builder: (context) {

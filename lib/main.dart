@@ -100,7 +100,7 @@ class HeyJoyApp extends StatelessWidget {
         '/auth': (context) =>  AuthPage(),
       },
       debugShowCheckedModeBanner: false,
-      home:  Dashboard(),
+      home:  AuthPage(),
     );
   }
 }

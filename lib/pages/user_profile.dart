@@ -83,6 +83,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           selectedImage = selected;
         });
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 1),
+        content: Text('Image selected'),
+      ));
     });
   }
 
@@ -241,6 +246,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                               UserPref.setNote(editedText);
                                               text = UserPref.getNote();
                                             });
+                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                              backgroundColor: Colors.green,
+                                              duration: Duration(seconds: 1),
+                                              content: Text('Note saved'),
+                                            ));
                                             Navigator.of(context).pop();
                                           },
                                         ),

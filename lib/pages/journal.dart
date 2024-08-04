@@ -50,6 +50,13 @@ class _JournalPageState extends State<JournalPage> {
       db.toDoList.add([_controller.text, false, _contentController.text, formattedDateTime]);
       _controller.clear();
     });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.green,
+        content: Text('Task added'),
+        duration: Duration(seconds: 1),
+      ),
+    );
     Navigator.of(context).pop();
     db.updateDataBase();
   }
@@ -74,6 +81,13 @@ class _JournalPageState extends State<JournalPage> {
     setState(() {
       db.toDoList.removeAt(index);
     });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Task deleted'),
+        duration: Duration(seconds: 1),
+      ),
+    );
     db.updateDataBase();
   }
 

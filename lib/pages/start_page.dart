@@ -28,7 +28,7 @@ class StartPage extends StatelessWidget {
                     //Sign Up Button
                     GestureDetector(
                       onTap: (){
-                        Navigator.pushNamed(context, '/signUp');
+                        Navigator.pushReplacementNamed(context, '/signUp');
                       },
                       child: Container(
                         margin: EdgeInsets.only(top: 250),
@@ -40,7 +40,7 @@ class StartPage extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            "Sign Up",
+                            "Create Account",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 25,
@@ -66,7 +66,7 @@ class StartPage extends StatelessWidget {
                         SizedBox(width: 5),
                         GestureDetector(
                           onTap: (){
-                            Navigator.pushNamed(context, '/logIn');
+                            Navigator.pushReplacementNamed(context, '/logIn');
                           },
                           child: Text(
                               "Login",
