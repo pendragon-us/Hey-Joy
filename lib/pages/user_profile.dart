@@ -13,15 +13,77 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-
+  bool isLoading = true;
   String userName = 'Loading...';
   String text = 'Type a note here...';
+  String selectedImage = "";
+  List<String> images = [
+    'images/pics/woman1.png',
+    'images/pics/woman2.png',
+    'images/pics/woman3.png',
+  ];
 
   @override
   void initState() {
     super.initState();
     fetchUserName();
-    text = UserPref.getNote();
+    UserPref.init().then((_) {
+      setState(() {
+        text = UserPref.getNote();
+        selectedImage = UserPref.getImage();
+        isLoading = false;
+      });
+    });
+  }
+
+  void showImagePicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 20),
+              child: Text(
+                'Select an image',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
+                itemCount: images.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      UserPref.setImage(images[index]);
+                      Navigator.pop(context, images[index]);
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10),
+                      child: Image(
+                        image: AssetImage(images[index]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((selected) {
+      if (selected != null) {
+        setState(() {
+          selectedImage = selected;
+        });
+      }
+    });
   }
 
   Future<void> fetchUserName() async {
@@ -50,14 +112,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-
     TextEditingController textEditingController = TextEditingController();
 
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xfff8eee2),
-        body: Column(
+        body: isLoading
+          ? Center(child: CircularProgressIndicator())
+            : Column(
           children: [
             //Hello
             Expanded(
@@ -66,56 +129,53 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     //Hello
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      height: 70,
-                      width: MediaQuery.of(context).size.width / 1.4,
-                      decoration: BoxDecoration(
-                        color: Color(0xffD9D9D9),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Hello!',
-                          style: TextStyle(
-                            fontSize: 26,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 20),
+                        width: MediaQuery.of(context).size.width / 1.4,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Hello!',
+                            style: TextStyle(
+                              fontSize: 26,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
+                    SizedBox(height: 10,),
                     //User picture
-                    Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        Image(
-                          width: 150,
-                          height: 150,
-                          image: AssetImage('images/woman.png'),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: showImagePicker,
+                        child: Image(
+                          image: AssetImage(selectedImage),
                         ),
-                        IconButton(
-                            onPressed: (){},
-                            icon: Icon(Icons.edit),
-                        )
-                      ],
+                      ),
                     ),
                     //User name
-                    Container(
-                      margin: EdgeInsets.only(top: 20),
-                      height: 70,
-                      width: MediaQuery.of(context).size.width / 1.4,
-                      decoration: BoxDecoration(
-                        color: Color(0xffD9D9D9),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          userName,
-                          style: TextStyle(
-                            fontSize: 26,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: MediaQuery.of(context).size.width / 1.4,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            userName,
+                            style: TextStyle(
+                              fontSize: 26,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -131,7 +191,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 height: 70,
                 width: MediaQuery.of(context).size.width / 1.1,
                 decoration: BoxDecoration(
-                  color: Color(0xffD9D9D9),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -149,7 +209,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
-                                fontWeight: FontWeight.bold
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -161,7 +221,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text('Type the note here'),
+                                      title: Text(
+                                        'Type the note here',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                        ),
+                                      ),
                                       content: TextField(
                                         controller: textEditingController,
                                         decoration: InputDecoration(hintText: 'Enter text here'),
@@ -198,8 +264,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     Text(
                       text,
                       style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
+                        color: Colors.black,
+                        fontSize: 20,
                       ),
                     ),
                     Container(
@@ -212,14 +278,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             child: GestureDetector(
                               onTap: (){
                                 FirebaseAuth.instance.signOut();
-                                Navigator.pop(context);
+                                Navigator.pushReplacementNamed(context, '/auth');
                               },
                               child: Text(
                                 "Logout",
                                 style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -228,14 +294,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             margin: EdgeInsets.only(right: 20),
                             child: GestureDetector(
                               onTap: (){
-                                //Navigator.pushReplacementNamed(context, '/dashboard');
                                 Navigator.pop(context);
                               },
-                              child: Text("Back",
+                              child: Text(
+                                "Back",
                                 style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -244,7 +310,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ),
                   ],
-                )
+                ),
               ),
             ),
           ],

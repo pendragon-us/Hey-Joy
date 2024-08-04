@@ -19,6 +19,7 @@ class _CalendarPageState extends State<CalendarPage> {
   final _myBox = Hive.box('mybox');
   ToDoDataBase db = ToDoDataBase();
   List<dynamic> _notesForSelectedDate = [];
+  Map<DateTime, List<dynamic>> _events = {};
 
   @override
   void initState() {
@@ -27,7 +28,22 @@ class _CalendarPageState extends State<CalendarPage> {
     } else {
       db.loadData();
     }
+    _loadEvents();
     super.initState();
+  }
+
+  void _loadEvents() {
+    Map<DateTime, List<dynamic>> events = {};
+    for (var note in db.toDoList) {
+      DateTime noteDate = DateFormat('MM-dd').parse(note[3].substring(0, 5));
+      if (!events.containsKey(noteDate)) {
+        events[noteDate] = [];
+      }
+      events[noteDate]!.add(note);
+    }
+    setState(() {
+      _events = events;
+    });
   }
 
   void _fetchNotesForSelectedDate(DateTime date) {
@@ -95,6 +111,23 @@ class _CalendarPageState extends State<CalendarPage> {
                     shape: BoxShape.circle,
                   ),
                 ),
+                eventLoader: (day) {
+                  String formattedDate = DateFormat('MM-dd').format(day);
+                  return _events.keys.any((eventDay) {
+                    return DateFormat('MM-dd').format(eventDay) == formattedDate;
+                  }) ? ['Event'] : [];
+                },
+                calendarBuilders: CalendarBuilders(
+                  markerBuilder: (context, day, events) {
+                    if (events.isNotEmpty) {
+                      return Positioned(
+                        bottom: 1,
+                        child: _buildEventsMarker(day, events),
+                      );
+                    }
+                    return null;
+                  },
+                ),
               ),
             ),
             if (_notesForSelectedDate.isNotEmpty) ...[
@@ -135,6 +168,18 @@ class _CalendarPageState extends State<CalendarPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEventsMarker(DateTime date, List<dynamic> events) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.purpleAccent,
+      ),
+      width: 7.0,
+      height: 7.0,
     );
   }
 }

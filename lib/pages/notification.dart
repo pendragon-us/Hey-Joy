@@ -4,6 +4,7 @@ import 'package:hey_joy_application/pages/unread_notifications.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 
+import '../data/user_pref.dart';
 import 'all_notifications.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -14,6 +15,18 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
+
+  String selectedImage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      selectedImage = UserPref.getImage();
+    });
+  }
+
+
   final List _pages = [
     AllNotifications(),
     UnreadNotifications(),
@@ -31,6 +44,17 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xffD9D9D9),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Image.asset('images/HeyJoylogo.png', width: 95, height: 95,),
+            SizedBox(width: 10,),
+            Image.asset(selectedImage, width: 60, height: 60,)
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

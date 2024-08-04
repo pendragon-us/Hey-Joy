@@ -74,11 +74,20 @@ class _LogInPageState extends State<LogInPage> {
             //This container contains the main UI of the application
             SingleChildScrollView(
               child: Container(
-                margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/4),
+                margin: EdgeInsets.only(top: MediaQuery.of(context).size.height/4.5),
                 child: Center(
                   child: Column(
                     //mainAxisAlignment: MainAxisAlignment.spaceE,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('images/fb.png', width: 50, height: 50,),
+                          Image.asset('images/google.png', width: 35, height: 35,),
+                          Image.asset('images/apple.png',width: 50, height: 50,),
+                        ],
+                      ),
+                      SizedBox(height: 15),
                       Row(
                         children: [
                           Expanded(
@@ -117,7 +126,7 @@ class _LogInPageState extends State<LogInPage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Username or Email $errorMsg',
+                                  Text('Email $errorMsg',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15
@@ -167,7 +176,7 @@ class _LogInPageState extends State<LogInPage> {
                               GestureDetector(
                                   onTap: logIn,
                                   child: Container(
-                                    height: 40,
+                                    height: 50,
                                     width: MediaQuery.of(context).size.width/2,
                                     decoration: BoxDecoration(
                                       color: Colors.black,
@@ -175,7 +184,7 @@ class _LogInPageState extends State<LogInPage> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                          "Sign In",
+                                          "LogIn",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,

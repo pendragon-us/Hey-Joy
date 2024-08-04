@@ -97,9 +97,10 @@ class HeyJoyApp extends StatelessWidget {
         '/emojiTracker': (context) =>  MoodSelectorPage(),
         '/calender': (context) =>  CalendarPage(),
         '/journalOrCalender': (context) =>  JournalOrCalender(),
+        '/auth': (context) =>  AuthPage(),
       },
       debugShowCheckedModeBanner: false,
-      home:  AuthPage(),
+      home:  Dashboard(),
     );
   }
 }

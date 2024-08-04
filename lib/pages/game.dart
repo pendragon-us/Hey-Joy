@@ -17,7 +17,9 @@ class _GamePageState extends State<GamePage> {
   bool isO = true;
   bool gameActive = true;
   String userBestTime = '00:00';
-  DateTime? gameStartTime; // Variable to store the game start time
+  DateTime? gameStartTime;
+  bool isComputerThinking = false;
+
 
   @override
   void initState() {
@@ -40,7 +42,11 @@ class _GamePageState extends State<GamePage> {
       displayXO[index] = 'X'; // User's move
       isO = !isO;
       if (!checkWinner('X')) {
-        computerMove();
+        isComputerThinking = true;
+        Future.delayed(Duration(seconds: 1), () { // Add this line
+          computerMove();
+          isComputerThinking = false;
+        });
       }
     });
   }
@@ -160,117 +166,142 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    // Game title
-                    Text(
-                      "Tic Tac Toe",
-                      style: GoogleFonts.poppins(
-                        fontSize: 30,
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    // Divider
-                    Container(
-                      height: 10,
-                      width: MediaQuery.of(context).size.width / 2,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Text(
-                      "Best Time: $userBestTime",
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    // Game profile cards
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Expanded(
-                          child: GameProfileCard(
-                            color: Colors.blue,
-                            image: 'images/userScore.png',
-                            mark: 'X',
-                            user: 'You',
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  LinearProgressIndicator(
+                      backgroundColor: Colors.white,
+                      valueColor: AlwaysStoppedAnimation(isComputerThinking ? Colors.red : Colors.transparent)
+                  ),
+
+                  //back button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                              color: Colors.grey,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: Colors.black,
                           ),
                         ),
-                        SizedBox(width: 10,),
-                        Expanded(
-                          child: GameProfileCard(
-                            color: Colors.red,
-                            image: 'images/computerScore.png',
-                            mark: 'O',
-                            user: 'Computer',
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              // Game board
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(
-                      colors: const [Colors.red, Colors.blue],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                      ),
+                    ],
+                  ),
+                  // Game title
+                  Text(
+                    "Tic Tac Toe",
+                    style: GoogleFonts.poppins(
+                      fontSize: 30,
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  child: GridView.builder(
-                    itemCount: 9,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                  // Divider
+                  Container(
+                    height: 10,
+                    width: MediaQuery.of(context).size.width / 2,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          tapped(index);
-                        },
-                        child: Container(
-                          margin: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Center(
-                            child: Text(
-                              displayXO[index],
-                              style: TextStyle(
-                                fontSize: 64,
-                                color: displayXO[index] == 'O'
-                                    ? Colors.blue
-                                    : displayXO[index] == 'X'
-                                    ? Colors.red
-                                    : Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  ),
+                  SizedBox(height: 10,),
+                  Text(
+                    "Best Time: $userBestTime",
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Game profile cards
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Expanded(
+                        child: GameProfileCard(
+                          color: Colors.blue,
+                          image: 'images/userScore.png',
+                          mark: 'X',
+                          user: 'You',
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                      Expanded(
+                        child: GameProfileCard(
+                          color: Colors.red,
+                          image: 'images/computerScore.png',
+                          mark: 'O',
+                          user: 'Computer',
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            // Game board
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: const [Colors.red, Colors.blue],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: GridView.builder(
+                  itemCount: 9,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        tapped(index);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Text(
+                            displayXO[index],
+                            style: TextStyle(
+                              fontSize: 64,
+                              color: displayXO[index] == 'O'
+                                  ? Colors.blue
+                                  : displayXO[index] == 'X'
+                                  ? Colors.red
+                                  : Colors.black,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

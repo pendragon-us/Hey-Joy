@@ -81,10 +81,12 @@ class _JournalPageState extends State<JournalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xffD9D9D9),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('images/app_logo.png', height: 100),
+            Image.asset('images/HeyJoylogo.png', width: 95, height: 95,),
+            SizedBox(width: 10,),
             Text('Journal')
           ],
         ),

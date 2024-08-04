@@ -53,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'password': encryptedPassword.base64,
         });
 
-        Navigator.pushReplacementNamed(context, '/emojiTracker');
+        Navigator.pushReplacementNamed(context, '/logIn');
       } else {
         Navigator.pop(context);
         showError('User creation failed.');
@@ -105,6 +105,15 @@ class _SignUpPageState extends State<SignUpPage> {
                     //mainAxisAlignment: MainAxisAlignment.spaceE,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('images/fb.png', width: 50, height: 50,),
+                          Image.asset('images/google.png', width: 35, height: 35,),
+                          Image.asset('images/apple.png',width: 50, height: 50,),
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                      Row(
                         children: [
                           Expanded(
                             child: Container(
@@ -133,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 60),
+                      SizedBox(height: 40),
                       Column(
                         children: [
                           AppTextField(
